@@ -1,9 +1,8 @@
-// Importation des icônes pour les fonctionnalités de la banque
 import ChatIcon from '../assets/icon-chat.png';
 import MoneyIcon from '../assets/icon-money.png';
 import SecurityIcon from '../assets/icon-security.png';
 
-// Liste des fonctionnalités mises en avant sur le site
+
 const features = [
     {
         icon: ChatIcon,
@@ -22,6 +21,25 @@ const features = [
     },
 ];
 
+const account = [
+    {
+        title: "Argent Bank Checking (x8349)",
+        amount: "2,082.79",
+        description: "Available Balance"
+    },
+    {
+        title: "Argent Bank Savings (x6712)",
+        amount: "10,928.42",
+        description: "Available Balance"
+    },
+    {
+        title: "Argent Bank Credit Card (x8349)",
+        amount: "184.30",
+        description: "Current Balance"
+    }
+];
+
 export default {
-    features
+    features,
+    account
 };

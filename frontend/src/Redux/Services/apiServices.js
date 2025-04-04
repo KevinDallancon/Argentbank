@@ -1,24 +1,56 @@
-// Or from '@reduxjs/toolkit/query/react'
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-export const apiServices = createApi({
-  // Set the baseUrl for every endpoint below
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://127.0.0.1:3001/api/v1' }),
-  endpoints: (build) => ({
-    getPokemonByName: build.query({
-      // Will make a request like https://pokeapi.co/api/v2/pokemon/bulbasaur
-      query: (name) => `pokemon/${name}`,
+// API service pour les opérations liées aux utilisateurs
+export const apiService = createApi({
+  reducerPath: 'api',
+  
+  // Configuration de base pour toutes les requêtes
+  baseQuery: fetchBaseQuery({ 
+    baseUrl: 'http://localhost:3001/api/v1',
+    
+    // Préparation des en-têtes avec authentification
+    prepareHeaders: (headers) => {
+      const authToken = sessionStorage.getItem('token');
+      
+      if (authToken) {
+        headers.set('Authorization', `Bearer ${authToken}`);
+      }
+      return headers;
+    },
+  }),
+  
+  // Définition des points d'accès API
+  endpoints: (builder) => ({
+    // Point d'accès pour l'authentification
+    authUser: builder.mutation({
+      query: (loginData) => ({
+        url: '/user/login',
+        method: 'POST',
+        body: loginData,
+      }),
     }),
-    updatePokemon: build.mutation({
-      query: ({ name, patch }) => ({
-        url: `pokemon/${name}`,
-        // When performing a mutation, you typically use a method of
-        // PATCH/PUT/POST/DELETE for REST endpoints
-        method: 'PATCH',
-        // fetchBaseQuery automatically adds `content-type: application/json` to
-        // the Headers and calls `JSON.stringify(patch)`
-        body: patch,
+    
+    // Point d'accès pour récupérer les informations du profil
+    fetchUserProfile: builder.query({
+      query: () => ({
+        url: '/user/profile',
+        method: 'POST',
+      }),
+    }),
+    // Point d'accès pour mettre à jour le profil utilisateur
+    updateUserProfile: builder.mutation({
+      query: (userData) => ({
+        url: '/user/profile',
+        method: 'PUT',
+        body: userData,
       }),
     }),
   }),
-})
+});
+
+// Export des hooks pour utilisation dans les composants
+export const { 
+  useAuthUserMutation,  // Correspond à "authUser" + "Mutation"
+  useFetchUserProfileQuery,  // Correspond à "fetchUserProfile" + "Query"
+  useUpdateUserProfileMutation  // Correspond à "updateUserProfile" + "Mutation"
+} = apiService;
