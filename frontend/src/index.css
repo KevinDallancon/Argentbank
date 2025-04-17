@@ -64,6 +64,8 @@ body {
 .main-nav-item {
   text-decoration: none;
   margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
 }
 
 .main-nav-item:hover {
@@ -298,4 +300,52 @@ body {
   .transaction-button {
     width: 200px;
   }
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: 2rem;
+  color: white;
+}
+
+.error-container h1 {
+  font-size: 6rem;
+  margin-bottom: 1rem;
+  color: #00bc77;
+}
+
+.error-container h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.error-container p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.error-home-button {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  background-color: #00bc77;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.error-home-button:hover {
+  background-color: #009962;
+}
+
+.main-nav-item .sign-in-icon,
+.main-nav-item .sign-out-icon {
+  margin-right: 8px;
 }

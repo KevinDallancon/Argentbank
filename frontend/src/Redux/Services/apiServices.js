@@ -1,56 +1,86 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { updateUserProfile } from '../Slices/authentificationSlice';
 
-// API service pour les opérations liées aux utilisateurs
+// URL de base de l'API
+const BASE_URL = 'http://localhost:3001/api/v1';
+
 export const apiService = createApi({
   reducerPath: 'api',
-  
-  // Configuration de base pour toutes les requêtes
   baseQuery: fetchBaseQuery({ 
-    baseUrl: 'http://localhost:3001/api/v1',
-    
-    // Préparation des en-têtes avec authentification
-    prepareHeaders: (headers) => {
-      const authToken = sessionStorage.getItem('token');
+    baseUrl: BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+      // Récupérer le token depuis le state Redux
+      const token = getState().authentification.token;
       
-      if (authToken) {
-        headers.set('Authorization', `Bearer ${authToken}`);
+      // Si le token existe, ajouter l'en-tête d'autorisation
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
       }
       return headers;
     },
   }),
-  
-  // Définition des points d'accès API
+  tagTypes: ['Profile'],
   endpoints: (builder) => ({
-    // Point d'accès pour l'authentification
+    // Endpoint pour l'authentification
     authUser: builder.mutation({
-      query: (loginData) => ({
+      query: (credentials) => ({
         url: '/user/login',
         method: 'POST',
-        body: loginData,
+        body: credentials,
       }),
     }),
     
-    // Point d'accès pour récupérer les informations du profil
+    // Endpoint pour récupérer le profil utilisateur
     fetchUserProfile: builder.query({
       query: () => ({
         url: '/user/profile',
-        method: 'POST',
+        method: 'POST', // Utiliser POST pour récupérer le profil
+        body: {} 
       }),
+      providesTags: ['Profile'],
+      // Gérer la réponse pour mettre à jour automatiquement le store redux
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (data?.body) {
+            dispatch(updateUserProfile({
+              firstName: data.body.firstName,
+              lastName: data.body.lastName
+            }));
+          }
+        } catch (err) {
+          console.error('Erreur lors de la récupération du profil:', err);
+        }
+      }
     }),
-    // Point d'accès pour mettre à jour le profil utilisateur
+    
+    // Endpoint pour mettre à jour le profil utilisateur
     updateUserProfile: builder.mutation({
       query: (userData) => ({
         url: '/user/profile',
         method: 'PUT',
         body: userData,
       }),
+      //déclenche automatiquement un rafraîchissement des données
+      invalidatesTags: ['Profile'],
+      // Mettre à jour automatiquement le store redux après une mise à jour réussie
+      async onQueryStarted(userData, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(updateUserProfile({
+            firstName: data.body.firstName,
+            lastName: data.body.lastName
+          }));
+        } catch (err) {
+          console.error('Erreur lors de la mise à jour du profil:', err);
+        }
+      }
     }),
   }),
 });
 
-// Export des hooks pour utilisation dans les composants
 export const { 
-  useAuthUserMutation,  // Correspond à "authUser" + "Mutation"
-  useFetchUserProfileQuery,  // Correspond à "fetchUserProfile" + "Query"
-  useUpdateUserProfileMutation  // Correspond à "updateUserProfile" + "Mutation"
+  useAuthUserMutation,
+  useFetchUserProfileQuery, 
+  useUpdateUserProfileMutation
 } = apiService;

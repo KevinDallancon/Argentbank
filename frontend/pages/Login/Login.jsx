@@ -1,7 +1,7 @@
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from "react";
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Button from "../../components/Button/Button";
 import Footer from "../../components/Footer/Footer";
@@ -14,9 +14,11 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [loginError, setLoginError] = useState("");
   
   // Hook RTK Query pour l'appel API login
   const [login, { isLoading }] = useAuthUserMutation();
+  const { token } = useSelector(state => state.authentification); // Récupérer le token
   
   // Hook Redux pour dispatcher des actions
   const dispatch = useDispatch();
@@ -24,9 +26,18 @@ const Login = () => {
   // Hook de navigation pour rediriger après login
   const navigate = useNavigate();
 
+  // Vérifier si l'utilisateur est déjà connecté
+  useEffect(() => {
+    if (token) {
+      // Rediriger vers le profil si déjà connecté
+      navigate('/profile');
+    }
+  }, [token, navigate]);
+
   // Fonction qui gère la soumission du formulaire
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoginError("");
     
     try {
       // Appel à l'API de login
@@ -34,16 +45,20 @@ const Login = () => {
         email: username, 
         password: password 
       }).unwrap();
+      
+      if (!result.body.token) {
+        throw new Error("Token non reçu de l'API");
+      }
+      
       console.log('Token reçu:', result.body.token);
       
-      // Stockage du token et des infos utilisateur dans Redux
+      // Stockage du token dans Redux
       dispatch(loginSuccess({
         token: result.body.token,
-        user: {
-          firstName: result.body.firstName,
-          lastName: result.body.lastName
-        }
-      }));
+        user: null,
+        rememberMe: rememberMe 
+      })
+      );
       
       // Redirection vers la page de profil
       navigate('/profile');
@@ -51,7 +66,7 @@ const Login = () => {
     } catch (error) {
       // Gestion des erreurs
       console.error('Erreur de connexion:', error);
-      alert('Identifiants incorrects. Veuillez réessayer.');
+      setLoginError("Identifiants incorrects. Veuillez réessayer.");
     }
   };
 
@@ -70,6 +85,7 @@ const Login = () => {
                 id="username" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                required
               />
             </div>
             <div className="input-wrapper">
@@ -79,6 +95,7 @@ const Login = () => {
                 id="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
             <div className="input-remember">
@@ -90,6 +107,7 @@ const Login = () => {
               />
               <label htmlFor="remember-me">Remember me</label>
             </div>
+            {loginError && <div className="error-message">{loginError}</div>}
             <Button
               type="submit"
               className="sign-in-button"

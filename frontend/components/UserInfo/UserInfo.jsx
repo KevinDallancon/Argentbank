@@ -26,11 +26,8 @@ const UserInfo = ({ firstName, lastName }) => {
       // Fermer le mode édition
       setIsEditing(false);
       
-      // Notification de succès (optionnel)
-      alert('Profile updated successfully!');
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Failed to update profile. Please try again.');
     }
   };
   // Fonction pour annuler l'édition et réinitialiser les champs
