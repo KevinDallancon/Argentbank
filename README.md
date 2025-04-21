@@ -1,3 +1,5 @@
 # ARGENT BANK 
 
-![Logo ArgentBank](/frontend/assets/argentBankLogo.png)
+<p align="center">
+  <img src="./assets/argentBankLogo.png" alt="Logo ArgentBank" width="200">
+</p>
