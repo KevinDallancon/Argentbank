@@ -1,3 +1,3 @@
 # ARGENT BANK 
 
-![Logo ArgentBank](assets/argentBankLogo.png)
+![Logo ArgentBank](/frontend/assets/argentBankLogo.png)
