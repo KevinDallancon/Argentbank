@@ -67,4 +67,4 @@ Ouvrez votre navigateur et accédez à `http://localhost:5173` pour voir l'appli
 ```bash
 npm run server
 ```
-Ouvrez votre navigateur et accédez à `http://localhost:3001` pour voir l'application.
+Ouvrez votre navigateur et accédez à `http://localhost:3001/api-docs` pour voir la documentation de l'api.
