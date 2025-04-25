@@ -38,15 +38,15 @@ paths:
           description: Unauthorized
         '500':
           description: Internal Server Error
-          
+  #  Route pour récupérer des transactions pour le mois en cours
   /transactions/{accountId}:
     get:
       security:
         - Bearer: []
       tags:
         - Transaction Module
-      summary: Get All Transactions for an Account
-      description: API for retrieving all transactions of a specific account
+      summary: all transactions for the current month
+      description: all transactions for the current month, grouped by account
       parameters:
         - in: header
           name: Authorization
@@ -72,27 +72,22 @@ paths:
         '401':
           description: Unauthorized
         '404':
-          description: Account not found
+          description: Transaction not found
         '500':
           description: Internal Server Error
-          
+  # Route pour récupérer une transaction spécifique
   /transactions/transaction/{transactionId}:
     get:
       security:
         - Bearer: []
       tags:
         - Transaction Module
-      summary: Get One Transaction
-      description: API for retrieving details of a specific transaction
+      summary: Retrieve a specific transaction by ID
+      description: Fetch details of a transaction by account ID and transaction ID
       parameters:
         - in: header
           name: Authorization
           description: Attach Bearer JWT token
-          required: true
-          type: string
-        - in: path
-          name: accountId
-          description: ID of the account
           required: true
           type: string
         - in: path
@@ -130,13 +125,8 @@ paths:
           required: true
           type: string
         - in: path
-          name: accountId
-          description: ID of the account
-          required: true
-          type: string
-        - in: path
           name: transactionId
-          description: ID of the transaction
+          description: ID of the account
           required: true
           type: string
         - in: body
@@ -232,4 +222,3 @@ definitions:
       notes:
         type: string
         description: Updated user notes about the transaction
-          
