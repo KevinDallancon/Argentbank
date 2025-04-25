@@ -58,6 +58,11 @@ paths:
           description: ID of the account
           required: true
           type: string
+        - in: query
+          name: month
+          description: Month to filter transactions (format: YYYY-MM). Defaults to the current month (e.g., 2025-03 as of March 2025) if not provided.
+          required: false
+          type: string
       produces:
         - application/json
       responses:
